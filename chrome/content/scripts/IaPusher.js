@@ -124,10 +124,10 @@ Zotero.IaPusher = {
           return;
         }
 
-        item.setField("extra", item.getField("extra") +"; " + archivedUrl);
+        item.setField("extra", item.getField("extra") +"\nArchive: " + archivedUrl);
       }
       else {
-        item.setField("extra", archivedUrl);
+        item.setField("extra", "Archive: " + archivedUrl);
       }
       item.saveTx();
     },
