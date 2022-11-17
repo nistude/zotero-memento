@@ -147,38 +147,32 @@ Zotero.IaPusher = {
       return "Version URL: "+"&lt;a href=\"" + archivedUrl + "\" data-originalurl=\"" + 
               url + "\"" + " data-versiondate=\""+ date + "\"&gt;" + "Robust Link for: " + 
               url + "&lt;/a&gt;";
-
     },
     /*
-     * Creates a new note and attaches it to the given item to contain a link to the archived resource.
+     * Creates a new link and attaches it to the given item to contain a link to the archived resource.
      *
      * @param {Zotero.Item} item: the library entry to be modified.
-     * @param {string} cLoc: the value of the content-location header in the server response.
-     * @param {string} loc: the value of the location-header in the server response.
-     * @param {string} responseText: server response represented as text.
+     * @param {string} archived: the archived URL.
      *
      * @returns: nothing.
      */
 
-    attachAnchorNote : function (item, archived) {
-      var url = item.getField('url');
-      var note = new Zotero.Item('note'); 
-      var noteText = ""; 
+    attachLink : function (item, archived) {
       if (archived && archived != "") {
-        noteText = this.makeAnchorTag(item, url, archived);
-        if (this.isArchived(item)) {
-          return;
-        }
-        note.setNote(noteText); 
-        note.parentID = item.id; 
-        note.saveTx();
-      }
-      else {
+        Zotero.Attachments.linkFromURL({
+          url: archived,
+          parentItemID: item.id,
+          contentType: undefined,
+          title: 'Internet Archive',
+          collections: undefined,
+          saveOptions: undefined,
+        });
+      } else {
         var errorNotifWindow =  new Zotero.ProgressWindow({closeOnClick:true});
         var notif = "Archive URL not found.";
         errorNotifWindow.changeHeadline(notif);
         errorNotifWindow.show();
-        errorNotifWindow.startCloseTimer(8000);   
+        errorNotifWindow.startCloseTimer(8000);
       }
     },
 
@@ -196,7 +190,7 @@ Zotero.IaPusher = {
       switch (status) {
         case 200:
           notif = "Success! \"Extra\" has archived link.";
-          this.attachAnchorNote(item, archived);
+          this.attachLink(item, archived);
           break;
         case 401:
           break;
